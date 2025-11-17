@@ -1,0 +1,5 @@
+com/example/entity/Product.class
+com/example/GreetingResource.class
+com/example/Greeting.class
+com/example/repository/ProductRepository.class
+com/example/resource/ProductResource.class

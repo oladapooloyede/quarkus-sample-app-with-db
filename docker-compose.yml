@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: quarkus-postgres
+    environment:
+      POSTGRES_DB: quarkusdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - quarkus-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  quarkus-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quarkus-sample-app
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/quarkusdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - quarkus-network
+
+volumes:
+  postgres_data:
+
+networks:
+  quarkus-network:
+    driver: bridge
